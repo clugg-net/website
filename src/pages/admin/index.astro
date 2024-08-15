@@ -1,11 +1,9 @@
 ---
 import BaseHead from "../../components/BaseHead.astro";
-import Header from "../../components/Header.astro";
-import Footer from "../../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
 import type CMS from "decap-cms-app";
 import type { InitOptions, CmsCollection } from "decap-cms-core";
-import style from "../../styles/global.css";
+import * as globalStyle from "../../styles/global.css";
 
 declare global {
   interface Window {
@@ -13,6 +11,8 @@ declare global {
     CMS: typeof CMS;
   }
 }
+
+const style = globalStyle.default;
 
 const blog_md: CmsCollection = {
   name: "blog",
@@ -87,6 +87,7 @@ const config: InitOptions = {
       window.CMS_MANUAL_INIT = true;
     </script>
     <script
+      is:inline
       src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"
       type="module"></script>
     <script is:inline type="module" define:vars={{ config, style }}>
