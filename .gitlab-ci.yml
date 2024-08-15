@@ -5,11 +5,11 @@ before_script:
   - bun install --production --frozen-lockfile
 pages:
   script:
-    - bun run build -- --outDir public
+    - bun run build
   artifacts:
     paths:
       # The folder that contains the files to be exposed at the Page URL
-      - public
+      - dist
   rules:
     # This ensures that only pushes to the default branch will trigger
     # a pages deploy
