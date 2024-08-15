@@ -65,10 +65,12 @@ const config: InitOptions = {
     // logo_url: "/favicon.svg",
     // logo_url: "https://img.shields.io/gitlab/last-commit/clugg.net%2Fwebsite",
     logo_url: "https://badgen.net/github/last-commit/clugg-net/website?scale=5",
+    publish_mode: "editorial_workflow",
     backend: {
       name: "gitlab",
       repo: "clugg.net/website",
       branch: "main",
+      squash_merges: true,
       auth_type: "pkce",
       app_id:
         "d178cbd52178611deafba8c57c1d5c3a1696684fc086fb8bb9b0e9934a74321b",
