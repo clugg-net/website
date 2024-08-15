@@ -38,7 +38,7 @@ USER root
 RUN chsh --shell /bin/bash ${USER}
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
-        git procps zsh bash bash-completion sudo \
+        git openssh-client procps zsh bash bash-completion sudo \
     && apt-get -y clean
 USER ${USER}
 
@@ -47,7 +47,7 @@ ARG USER="bun"
 USER root
 RUN chsh --shell /bin/bash ${USER}
 RUN apk update && apk add \
-    git git-bash-completion zsh git-zsh-completion zsh-completions sudo
+    git openssh-client git-bash-completion zsh git-zsh-completion zsh-completions sudo
 USER ${USER}
 
 FROM devcontainer-${BUN_VARIANT} AS devcontainer
