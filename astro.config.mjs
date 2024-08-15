@@ -7,6 +7,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://clugg.net',
+  trailingSlash: 'always',
   integrations: [mdx(), sitemap()],
   "output": "static"
   // output: "server",
