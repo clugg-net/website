@@ -1,0 +1,110 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import type CMS from "decap-cms-app";
+import type { InitOptions, CmsCollection } from "decap-cms-core";
+import style from "../../styles/global.css";
+
+declare global {
+  interface Window {
+    CMS_MANUAL_INIT: boolean;
+    CMS: typeof CMS;
+  }
+}
+
+const blog_md: CmsCollection = {
+  name: "blog",
+  label: "Blog",
+  folder: "src/content/blog",
+  create: true,
+  delete: true,
+  fields: [
+    {
+      name: "title",
+      label: "Title",
+      widget: "string",
+    },
+    {
+      name: "description",
+      label: "Title",
+      widget: "string",
+    },
+    {
+      name: "pubDate",
+      label: "Date published",
+      widget: "datetime",
+      date_format: "MMM D YYYY",
+      picker_utc: true,
+    },
+    {
+      name: "heroImage",
+      label: "Hero image",
+      widget: "image",
+    },
+    {
+      name: "body",
+      label: "Body",
+      widget: "markdown",
+    },
+  ],
+};
+
+const blog_mdx: CmsCollection = Object.assign({}, blog_md, {
+  name: "blog+",
+  label: "Blog+",
+  extension: "mdx",
+  format: "yaml-frontmatter",
+});
+
+const config: InitOptions = {
+  config: {
+    load_config_file: false,
+    site_url: "https://clugg.net",
+    // logo_url: "/favicon.svg",
+    // logo_url: "https://img.shields.io/gitlab/last-commit/clugg.net%2Fwebsite",
+    logo_url: "https://badgen.net/github/last-commit/clugg-net/website?scale=5",
+    backend: {
+      name: "gitlab",
+      repo: "clugg.net/website",
+      auth_type: "pkce",
+      app_id:
+        "d178cbd52178611deafba8c57c1d5c3a1696684fc086fb8bb9b0e9934a74321b",
+    },
+    media_folder: "public",
+    public_folder: "/",
+    collections: [blog_md, blog_mdx],
+  },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <script is:inline>
+      window.CMS_MANUAL_INIT = true;
+    </script>
+    <script
+      src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"
+      type="module"></script>
+    <script is:inline type="module" define:vars={{ config, style }}>
+      if (isSecureContext && location.protocol == "http:") {
+        Object.assign(config.config, {
+          backend: {
+            name: "git-gateway",
+          },
+          local_backend: true,
+        });
+      }
+      window.CMS.registerPreviewStyle(style, { raw: true });
+      window.CMS.init(config);
+    </script>
+  </head>
+  <body>
+    <!-- <Header /> -->
+    <main id="nc-root"></main>
+    <!-- <Footer /> -->
+  </body>
+</html>

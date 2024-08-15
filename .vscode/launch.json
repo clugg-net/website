@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "bun run dev",
+      "request": "launch",
+      "runtimeArgs": [
+        // "--inspect",
+        "run",
+        "dev"
+      ],
+      "runtimeExecutable": "bun",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node",
+    }
+  ]
+}
