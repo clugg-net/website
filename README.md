@@ -4,22 +4,10 @@ This is the website source for [clugg.net][/].
 
 [/]: https://clugg.net/ "clugg.net"
 
-<details open>
-    <summary>Open code in an editor</summary>
-
-Open in your web browser:<br />
-[StackBlitz](https://stackblitz.com/github/clugg-net/website)<br />
-[CodeSandbox](https://codesandbox.io/p/sandbox/github/clugg-net/website)<br />
-[GitHub Codespaces](https://codespaces.new/clugg-net/website?devcontainer_path=.devcontainer/blog/devcontainer.json)<br />
-[Visual Studio Code for the Web](https://vscode.dev/github/clugg-net/website)
-
-Open in your IDE:<br />
-[Visual Studio Code (SSH)](vscode://vscode.git/clone?url=git%40gitlab.com%3Aclugg.net%2Fwebsite.git)<br />
-[Visual Studio Code (HTTP)](vscode://vscode.git/clone?url=git%40gitlab.com%3Aclugg.net%2Fwebsite.git)<br />
-[IntelliJ IDEA (SSH)](jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=git%40gitlab.com%3Aclugg.net%2Fwebsite.git)<br />
-[IntelliJ IDEA (HTTP)](jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=https%3A%2F%2Fgitlab.com%2Fclugg.net%2Fwebsite.git)
-
-</details>
+| Code Editor | |
+| --- | --- |
+| StackBlitz | [▶️ Web](https://stackblitz.com/github/clugg-net/website)<br />
+| Visual Studio Code | [▶️ SSH](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=git@github.com:clugg-net/website.git)<br /> [▶️ HTTPS](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/clugg-net/website) |
 
 ### Features:
 
