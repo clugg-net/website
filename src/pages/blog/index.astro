@@ -99,7 +99,10 @@ const posts = (await getCollection("blog")).sort(
 										loading={index < 3 ? "eager" : "lazy"}
 										width={720}
 										height={360}
-										src={post.data.heroImage}
+										src={
+											post.data.heroImage ??
+											`/blog-placeholder-${1 + (index % 5)}.jpg`
+										}
 										alt=""
 									/>
 									<h4 class="title">{post.data.title}</h4>
