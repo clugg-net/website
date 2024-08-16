@@ -4,10 +4,22 @@ This is the website source for [clugg.net][/].
 
 [/]: https://clugg.net/ "clugg.net"
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/clugg-net/website)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/clugg-net/website)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/clugg-net/website?devcontainer_path=.devcontainer/blog/devcontainer.json)
-[![Open in VS Code for the Web](https://badgen.net/badge/icon/Open%20in%20VS%20Code%20for%20the%20Web/?label=&scale=1.6&labelColor=222&color=111&icon=https://github.com/pester/docs/raw/f6cd7cfea49b6dc87ccee562bb9fb1b353d1075f/static/img/features/visual-studio-code.svg)](https://vscode.dev/github.com/clugg-net/website)
+<details open>
+    <summary>Open code in an editor</summary>
+
+Open in your web browser:<br />
+[StackBlitz](https://stackblitz.com/github/clugg-net/website)<br />
+[CodeSandbox](https://codesandbox.io/p/sandbox/github/clugg-net/website)<br />
+[GitHub Codespaces](https://codespaces.new/clugg-net/website?devcontainer_path=.devcontainer/blog/devcontainer.json)<br />
+[Visual Studio Code for the Web](https://vscode.dev/github/clugg-net/website)
+
+Open in your IDE:<br />
+[Visual Studio Code (SSH)](vscode://vscode.git/clone?url=git%40gitlab.com%3Aclugg.net%2Fwebsite.git)<br />
+[Visual Studio Code (HTTP)](vscode://vscode.git/clone?url=git%40gitlab.com%3Aclugg.net%2Fwebsite.git)<br />
+[IntelliJ IDEA (SSH)](jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=git%40gitlab.com%3Aclugg.net%2Fwebsite.git)<br />
+[IntelliJ IDEA (HTTP)](jetbrains://idea/checkout/git?idea.required.plugins.id=Git4Idea&checkout.repo=https%3A%2F%2Fgitlab.com%2Fclugg.net%2Fwebsite.git)
+
+</details>
 
 ### Features:
 
