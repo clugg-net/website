@@ -4,10 +4,12 @@ This is the website source for [clugg.net][/].
 
 [/]: https://clugg.net/ "clugg.net"
 
-| Code Editor | |
-| --- | --- |
-| StackBlitz | [▶️ Web](https://stackblitz.com/github/clugg-net/website)<br />
-| Visual Studio Code | [▶️ SSH](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=git@github.com:clugg-net/website.git)<br /> [▶️ HTTPS](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/clugg-net/website) |
+<table>
+    <tr><th colspan="2">⌨️ Code editors</th></tr>
+    <tr><td>StackBlitz</td><td><a href="https://stackblitz.com/github/clugg-net/website">▶️ Web</a></td></tr>
+    <tr><td>Visual Studio Code</td><td><a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=git@github.com:clugg-net/website.git">▶️ SSH</a><br />
+    <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/clugg-net/website">▶️ HTTPS</a></td></tr>
+</table>
 
 ### Features:
 
@@ -74,7 +76,3 @@ When a pull-request is being reviewed, the changes to these key files should be 
 ## 🚀 Deployment
 
 If the tests and build pass, the PR can be merged to the main branch which will trigger a deployment to the live site.
-
-## 🕵 Debugging and telemetry
-
-
