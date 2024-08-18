@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://github.com/gitpod-io/gitpod/raw/main/components/gitpod-protocol/data/gitpod-schema.json
+
+image: gitpod/workspace-bun
+
+tasks:
+
+  - name: astro
+    init: bun install
+    command: gp ports await 8081 && bun run dev
+
+  - name: decap-server
+    command: bunx decap-server
+    env:
+      MODE: fs
+      LOG_LEVEL: debug
+      PORT: 8081
+
+ports:
+
+  - name: astro
+    port: 4321
+    onOpen: open-preview
+
+  - name: decap-server
+    port: 8081
+    onOpen: ignore
+
+vscode:
+  extensions:
+    - astro-build.astro-vscode
+    - oven.bun-vscode
+    - redhat.vscode-yaml
+    - unifiedjs.vscode-mdx

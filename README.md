@@ -6,6 +6,7 @@ This is the website source for [clugg.net][/].
 
 <table>
     <tr><th colspan="2">⌨️ Code editors</th></tr>
+    <tr><td>Gitpod</td><td><a href="https://gitpod.io/#https://github.com/clugg-net/website">▶️ Web</a></td></tr>
     <tr><td>StackBlitz</td><td><a href="https://stackblitz.com/github/clugg-net/website">▶️ Web</a></td></tr>
     <tr><td>Visual Studio Code</td><td><a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=git@github.com:clugg-net/website.git">▶️ SSH</a><br />
     <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/clugg-net/website">▶️ HTTPS</a></td></tr>
