@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  astro:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: devcontainer
+
+    environment:
+      - ASTRO_HOST=${ASTRO_HOST:-localhost}
+      - ASTRO_PORT=${ASTRO_PORT:-4321}
+
+    command: bun run dev -- --host $${ASTRO_HOST} --port $${ASTRO_PORT}
+
+    volumes:
+      - .:/home/bun/app:rw
+      - ~/.bun/install/cache:/home/bun/.bun/install/cache:cache
+
+    network_mode: host
+    ports:
+      - 4321
+
+  decap-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bun-alpine
+
+    environment:
+      - MODE=${DECAP_SERVER_MODE:-fs}
+      - PORT=${DECAP_SERVER_PORT:-8081}
+      - LOG_LEVEL=${DECAP_SERVER_LOG_LEVEL:-info}
+
+    command: bunx decap-server
+
+    volumes:
+      - .:/home/bun/app:rw
+      - ~/.bun/install/cache:/home/bun/.bun/install/cache:cache
+
+    network_mode: host
+    ports:
+      - 8081

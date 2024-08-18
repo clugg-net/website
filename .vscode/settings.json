@@ -1,0 +1,4 @@
+{
+    "bun.debugTerminal.enabled": true,
+    "bun.runtime": "node_modules/bun/bin/bun"
+}
