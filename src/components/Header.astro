@@ -1,19 +1,32 @@
 ---
 // Import the global.css file here so that it is included on
 // all pages through the use of the <Header /> component.
-import '../styles/global.css';
+import "../styles/global.css";
 
-import HeaderLink from './HeaderLink.astro';
-import { SITE_TITLE } from '../consts';
+import HeaderLink from "./HeaderLink.astro";
+import { SITE_TITLE } from "../consts";
+import { get_root_menu } from "../lib/content/menu";
+
+const menu_items = await get_root_menu();
 ---
 
 <header>
 	<nav>
 		<h2><a href="/">{SITE_TITLE}</a></h2>
 		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog/">Blog</HeaderLink>
-			<HeaderLink href="/about/">About</HeaderLink>
+			{
+				menu_items.length > 0
+					? menu_items.map((m) => (
+							<HeaderLink href={m.data.url} title={m.body || null}>
+								{m.data.title}
+							</HeaderLink>
+						))
+					: [
+							<HeaderLink href="/">Home</HeaderLink>,
+							<HeaderLink href="/blog/">Blog</HeaderLink>,
+							<HeaderLink href="/admin/">Admin</HeaderLink>,
+						]
+			}
 		</div>
 		<div class="social-links">
 			<a href="https://twitter.com/tysonclugg" target="_blank">

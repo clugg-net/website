@@ -1,9 +1,11 @@
 ---
+import Copyright from "./Copyright.astro";
+
 const today = new Date();
 ---
 
 <footer>
-	&copy; {today.getFullYear()} Tyson Clugg. All rights reserved.
+	<Copyright />
 	<div class="social-links">
 		<a href="https://twitter.com/tysonclugg" target="_blank">
 			<span class="sr-only">Follow Tyson on Twitter</span>

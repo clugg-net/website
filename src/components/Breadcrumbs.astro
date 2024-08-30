@@ -1,0 +1,95 @@
+---
+import { get_breadcrumbs } from "../lib/content/menu";
+
+interface Props {
+	url?: string;
+	title: string;
+	body?: string;
+}
+
+const {
+	url = Astro.request.url,
+	title,
+	body = "",
+} = Astro.props;
+
+const breadcrumbs = await get_breadcrumbs(url, title, body);
+const current_menu = breadcrumbs[breadcrumbs.length - 1];
+const schema = JSON.stringify({
+	"@context": "http://schema.org",
+	"@type": "BreadcrumbList",
+	itemListElement: breadcrumbs.map((entry, index) => ({
+		"@type": "ListItem",
+		position: index,
+		item: {
+			"@id": entry.data.url,
+			name: entry.data.title,
+			description: entry.body,
+		},
+	})),
+});
+---
+
+<style>
+	nav:has(li:only-child) {
+		display: none;
+	}
+	nav {
+		font-size: small;
+		padding: 0;
+		margin: 0;
+		/* color: var(--accent); */
+		color: color-mix(in srgb, currentColor 50%, transparent);
+		background: color-mix(in srgb, currentColor 10%, transparent);
+		box-shadow: 0 2px 8px rgba(var(--black),5%);
+		/* border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent); */
+	}
+	ol {
+		margin: 0;
+		padding: 0.5em 2em;
+		/* padding: 0; */
+		list-style: none;
+	}
+	li {
+		margin: 0;
+		padding: 0;
+		display: inline;
+	}
+	a {
+		text-decoration: underline;
+		color: currentColor;
+	}
+	li + li::before {
+		content: "";
+		display: inline-block;
+		margin: 0 0.4em;
+		transform: rotate(15deg);
+		border-right: 0.1em solid currentcolor;
+		height: 0.7em;
+	}
+	li:last-child a,
+	li:first-child a {
+		text-decoration: none;
+	}
+</style>
+
+<nav aria-label="breadcrumbs" class="breadcrumbs">
+	<script type="application/ld+json" set:html={schema} />
+	<ol transition:name="breadcrumbs:ol" transition:animate="slide" >
+		{
+			breadcrumbs.map((entry) => {
+				const isCurrent = entry.id == current_menu.id;
+				return (
+					<li>
+						<!-- display: block -->
+						<a
+							href={entry.data.url}
+							aria-current={isCurrent ? "location" : null}
+							title={entry.body || null}
+						>{entry.data.title}</a>
+					</li>
+				);
+			})
+		}
+	</ol>
+</nav>

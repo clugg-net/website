@@ -1,9 +1,10 @@
 ---
-import BaseHead from "../../components/BaseHead.astro";
-import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import BaseHead from "../components/BaseHead.astro";
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from "../consts";
+import { cms_collections } from "../content/config";
 import type CMS from "decap-cms-app";
-import type { InitOptions, CmsCollection } from "decap-cms-core";
-import * as globalStyle from "../../styles/global.css";
+import type { InitOptions } from "decap-cms-core";
+import * as globalStyle from "../styles/global.css";
 
 declare global {
   interface Window {
@@ -14,55 +15,12 @@ declare global {
 
 const style = globalStyle.default;
 
-const blog_md: CmsCollection = {
-  name: "blog",
-  label: "Blog",
-  folder: "src/content/blog",
-  create: true,
-  delete: true,
-  fields: [
-    {
-      name: "title",
-      label: "Title",
-      widget: "string",
-    },
-    {
-      name: "description",
-      label: "Title",
-      widget: "string",
-    },
-    {
-      name: "pubDate",
-      label: "Date published",
-      widget: "datetime",
-      date_format: "MMM D YYYY",
-      picker_utc: true,
-    },
-    {
-      name: "heroImage",
-      label: "Hero image",
-      widget: "image",
-    },
-    {
-      name: "body",
-      label: "Body",
-      widget: "markdown",
-    },
-  ],
-};
-
-const blog_mdx: CmsCollection = Object.assign({}, blog_md, {
-  name: "blog+",
-  label: "Blog+",
-  extension: "mdx",
-  format: "yaml-frontmatter",
-});
-
 const config: InitOptions = {
   config: {
     load_config_file: false,
-    site_url: "https://clugg.net",
-    logo_url: "https://badgen.net/github/last-commit/clugg-net/website?cache=300&scale=2",
+    site_url: SITE_URL,
+    logo_url:
+      "https://badgen.net/github/last-commit/clugg-net/website?cache=300&scale=2",
     publish_mode: "editorial_workflow",
     backend: {
       name: "gitlab",
@@ -73,9 +31,10 @@ const config: InitOptions = {
       app_id:
         "d178cbd52178611deafba8c57c1d5c3a1696684fc086fb8bb9b0e9934a74321b",
     },
+    local_backend: true,
     media_folder: "public",
     public_folder: "/",
-    collections: [blog_md, blog_mdx],
+    collections: cms_collections,
   },
 };
 ---

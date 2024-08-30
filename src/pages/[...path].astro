@@ -1,0 +1,35 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import { type PageEntry } from "../lib/content/page";
+import BlogPost from "../layouts/BlogPost.astro";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+	const posts = await getCollection("page");
+	return posts.map((post) => {
+		const path = post.slug.replace(/(^|\/)index$/, "").replace(/^\/$/, "");
+		return {
+			params: { path },
+			props: post,
+		};
+	});
+}
+
+interface Props {
+	path?: string;
+}
+
+const { path } = Astro.params;
+
+const slug = (path || "").replace(/\/$/, "/index").replace(/^$/, "index");
+const page = (await getEntry("page", slug)) as PageEntry;
+if (typeof page == "undefined") {
+	return new Response(null, { status: 404, statusText: "Not found" });
+}
+const { Content } = await page.render();
+---
+
+<BlogPost {...page.data}>
+	<Content />
+</BlogPost>
