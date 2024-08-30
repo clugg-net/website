@@ -6,18 +6,15 @@ import BlogPost from "../layouts/BlogPost.astro";
 export const prerender = true;
 
 export async function getStaticPaths() {
-	const posts = await getCollection("page");
+	const posts = (await getCollection("page")) as PageEntry[];
 	return posts.map((post) => {
-		const path = post.slug.replace(/(^|\/)index$/, "").replace(/^\/$/, "");
+		const path =
+			post.slug.replace(/(^|\/)index$/, "").replace(/^\/$/, "") || undefined;
 		return {
 			params: { path },
 			props: post,
 		};
 	});
-}
-
-interface Props {
-	path?: string;
 }
 
 const { path } = Astro.params;

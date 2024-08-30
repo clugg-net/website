@@ -74,7 +74,7 @@ const schema = JSON.stringify({
 </style>
 
 <nav aria-label="breadcrumbs" class="breadcrumbs">
-	<script type="application/ld+json" set:html={schema} />
+	<script is:inline type="application/ld+json" set:html={schema} />
 	<ol transition:name="breadcrumbs:ol" transition:animate="slide" >
 		{
 			breadcrumbs.map((entry) => {

@@ -8,8 +8,9 @@ import FormattedDate from "../components/FormattedDate.astro";
 import { Image } from "astro:assets";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { ViewTransitions } from "astro:transitions";
+import type { BlogEntry } from "../lib/content/blog";
 
-const posts = (await getCollection("blog")).sort(
+const posts = ((await getCollection("blog")) as BlogEntry[]).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 ---
@@ -91,47 +92,49 @@ const posts = (await getCollection("blog")).sort(
 	</head>
 	<body>
 		<Header />
-			<Breadcrumbs title="Blog" />
+		<Breadcrumbs title="Blog" />
 		<main>
 			<section>
 				<ul>
 					{
-						posts.length > 0 ? posts.map((post, index) => (
-							<li>
-								<a href={`/blog/${post.slug}`}>
-									<Image
-										loading={index < 3 ? "eager" : "lazy"}
-										width={720}
-										height={360}
-										src={
-											post.data.heroImage ??
-											`/blog-placeholder-${1 + (index % 5)}.jpg`
-										}
-										alt=""
-									/>
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						)) : [
-							<li>
-								<a href="/admin/">
-									<Image
-										loading="eager"
-										width={720}
-										height={360}
-										src="/blog-placeholder-1.jpg"
-										alt=""
-									/>
-									<h4 class="title">Put your content here!</h4>
-									<p class="date">
-										<FormattedDate date={new Date()} />
-									</p>
-								</a>
-							</li>,
-						]
+						posts.length > 0
+							? posts.map((post, index) => (
+									<li>
+										<a href={`/blog/${post.slug}`}>
+											<Image
+												loading={index < 3 ? "eager" : "lazy"}
+												width={720}
+												height={360}
+												src={
+													post.data.heroImage ??
+													`/blog-placeholder-${1 + (index % 5)}.jpg`
+												}
+												alt=""
+											/>
+											<h4 class="title">{post.data.title}</h4>
+											<p class="date">
+												<FormattedDate date={post.data.pubDate} />
+											</p>
+										</a>
+									</li>
+								))
+							: [
+									<li>
+										<a href="/admin/">
+											<Image
+												loading="eager"
+												width={720}
+												height={360}
+												src="/blog-placeholder-1.jpg"
+												alt=""
+											/>
+											<h4 class="title">Put your content here!</h4>
+											<p class="date">
+												<FormattedDate date={new Date()} />
+											</p>
+										</a>
+									</li>,
+								]
 					}
 				</ul>
 			</section>

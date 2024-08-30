@@ -1,11 +1,12 @@
 ---
 import { getCollection } from "astro:content";
 import { SITE_TITLE } from "../consts";
+import type { CopyrightEntry } from "../lib/content/settings";
 
 const current_year = new Date().getFullYear();
 
 let copyright = `© ${current_year} ${SITE_TITLE}. All rights reserved.`;
-for (const entry of await getCollection("copyright")) {
+for (const entry of (await getCollection("copyright")) as CopyrightEntry[]) {
 	const data = entry.data;
 	if (typeof entry.data.first_published == "undefined") continue;
 	const start_year = data.first_published || current_year;
