@@ -3,69 +3,110 @@ import BaseHead from "../components/BaseHead.astro";
 import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from "../consts";
 import { cms_collections } from "../content/config";
 import type CMS from "decap-cms-app";
-import type { InitOptions } from "decap-cms-core";
+import type { InitOptions, CmsConfig } from "decap-cms-core";
 import * as globalStyle from "../styles/global.css";
+import envCi from "env-ci";
 
 declare global {
-  interface Window {
-    CMS_MANUAL_INIT: boolean;
-    CMS: typeof CMS;
-  }
+	interface Window {
+		CMS_MANUAL_INIT: boolean;
+		CMS: typeof CMS;
+	}
 }
 
 const style = globalStyle.default;
 
+let backend: CmsConfig["backend"] | undefined;
+let logo_url: CmsConfig["logo_url"] = process.env.LOGO_URL;
+
+const env = envCi();
+const app_id = process.env.APP_ID;
+const base_url = process.env.GIT_GATEWAY_BASE_URL;
+const proxy_url = process.env.GIT_GATEWAY_PROXY_URL;
+if (env.isCi) {
+	switch (env.service) {
+		case "bitbucket":
+			backend = {
+				name: "bitbucket",
+				repo: env.slug,
+				auth_type: app_id ? "implicit" : undefined,
+				app_id,
+				base_url,
+				proxy_url,
+			};
+			logo_url =
+				logo_url ||
+				`https://img.shields.io/bitbucket/last-commit/${env.slug}/${env.branch}`;
+		case "gitlab":
+			backend = {
+				name: "gitlab",
+				repo: env.slug,
+				branch: env.branch,
+				auth_type: app_id ? "pkce" : "implicit",
+				app_id: process.env.APP_ID,
+				base_url,
+				proxy_url,
+			};
+			logo_url =
+				logo_url ||
+				`https://img.shields.io/gitlab/last-commit/${encodeURIComponent(env.slug)}`;
+		default:
+			backend = {
+				name: "git-gateway",
+				base_url,
+				proxy_url,
+			};
+	}
+} else {
+	backend = {
+		name: "git-gateway",
+		base_url,
+		proxy_url,
+	};
+}
+
 const config: InitOptions = {
-  config: {
-    load_config_file: false,
-    site_url: SITE_URL,
-    logo_url:
-      "https://badgen.net/github/last-commit/clugg-net/website?cache=300&scale=2",
-    publish_mode: "editorial_workflow",
-    backend: {
-      name: "gitlab",
-      repo: "clugg.net/website",
-      branch: "main",
-      squash_merges: true,
-      auth_type: "pkce",
-      app_id:
-        "d178cbd52178611deafba8c57c1d5c3a1696684fc086fb8bb9b0e9934a74321b",
-    },
-    local_backend: true,
-    media_folder: "public",
-    public_folder: "/",
-    collections: cms_collections,
-  },
+	config: {
+		load_config_file: false,
+		site_url: SITE_URL,
+		logo_url,
+		publish_mode: "editorial_workflow",
+		backend,
+		local_backend: true,
+		media_folder: "public",
+		public_folder: "/",
+		collections: cms_collections,
+	},
 };
 ---
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-    <script is:inline>
-      window.CMS_MANUAL_INIT = true;
-    </script>
-    <script
-      is:inline
-      src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"
-      type="module"></script>
-    <script is:inline type="module" define:vars={{ config, style }}>
-      if (isSecureContext && location.protocol == "http:") {
-        Object.assign(config.config, {
-          backend: {
-            name: "git-gateway",
-          },
-          local_backend: true,
-        });
-      }
-      window.CMS.registerPreviewStyle(style, { raw: true });
-      window.CMS.init(config);
-    </script>
-  </head>
-  <body>
-    <!-- <Header /> -->
-    <main id="nc-root"></main>
-    <!-- <Footer /> -->
-  </body>
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<script is:inline>
+			window.CMS_MANUAL_INIT = true;
+		</script>
+		<script
+			is:inline
+			src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"
+			type="module"></script>
+		<script is:inline type="module" define:vars={{ config, style }}>
+			if (isSecureContext && location.protocol == "http:") {
+				Object.assign(config.config, {
+					backend: {
+						name: "git-gateway",
+					},
+					local_backend: true,
+				});
+			}
+			window.CMS.registerPreviewStyle(style, { raw: true });
+			window.CMS.init(config);
+		</script>
+	</head>
+	<body>
+		<!-- <Header /> -->
+		<main id="nc-root"></main>
+		<!-- <Footer /> -->
+	</body>
 </html>
