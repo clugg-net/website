@@ -37,6 +37,7 @@ if (env.isCi) {
 			logo_url =
 				logo_url ||
 				`https://img.shields.io/bitbucket/last-commit/${env.slug}/${env.branch}`;
+			break;
 		case "gitlab":
 			backend = {
 				name: "gitlab",
@@ -50,6 +51,7 @@ if (env.isCi) {
 			logo_url =
 				logo_url ||
 				`https://img.shields.io/gitlab/last-commit/${encodeURIComponent(env.slug)}`;
+			break;
 		default:
 			backend = {
 				name: "git-gateway",
