@@ -1,16 +1,23 @@
-import { defineCollection, z } from 'astro:content';
+import { type CollectionConfig } from "astro:content";
+import type { CmsCollection } from "decap-cms-core";
 
-const blog = defineCollection({
-	type: 'content',
-	// Type-check frontmatter using a schema
-	schema: z.object({
-		title: z.string(),
-		description: z.string(),
-		// Transform string to Date object
-		pubDate: z.coerce.date(),
-		updatedDate: z.coerce.date().optional(),
-		heroImage: z.string().optional(),
-	}),
-});
+import { cms_blog_md, cms_blog_mdx, blog } from "../lib/content/blog";
+import { cms_menu, menu } from "../lib/content/menu";
+import { cms_page, page } from "../lib/content/page";
+import { cms_settings, copyright, settings } from "../lib/content/settings";
 
-export const collections = { blog };
+export const cms_collections: CmsCollection[] = [
+	cms_settings,
+	cms_menu,
+	cms_page,
+	cms_blog_md,
+	cms_blog_mdx,
+];
+
+export const collections: Record<string, CollectionConfig<unknown>> = {
+	blog,
+	menu,
+	page,
+	settings,
+	copyright,
+};
