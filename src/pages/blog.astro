@@ -101,16 +101,15 @@ const posts = ((await getCollection("blog")) as BlogEntry[]).sort(
 							? posts.map((post, index) => (
 									<li>
 										<a href={`/blog/${post.slug}`}>
-											<Image
-												loading={index < 3 ? "eager" : "lazy"}
-												width={720}
-												height={360}
-												src={
-													post.data.heroImage ??
-													`/blog-placeholder-${1 + (index % 5)}.jpg`
-												}
-												alt=""
-											/>
+											{post.data.heroImage ? (
+												<Image
+													loading={index < 3 ? "eager" : "lazy"}
+													width={720}
+													height={360}
+													src={post.data.heroImage}
+													alt=""
+												/>
+											) : null}
 											<h4 class="title">{post.data.title}</h4>
 											<p class="date">
 												<FormattedDate date={post.data.pubDate} />
@@ -121,13 +120,6 @@ const posts = ((await getCollection("blog")) as BlogEntry[]).sort(
 							: [
 									<li>
 										<a href="/admin/">
-											<Image
-												loading="eager"
-												width={720}
-												height={360}
-												src="/blog-placeholder-1.jpg"
-												alt=""
-											/>
 											<h4 class="title">Put your content here!</h4>
 											<p class="date">
 												<FormattedDate date={new Date()} />
