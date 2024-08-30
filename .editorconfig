@@ -1,0 +1,17 @@
+# top-most EditorConfig file
+root = true
+
+[*]
+# The primary intent of this config is to ensure our code is readable, since
+# code is read many more times than it is written.
+indent_style = tab  # honour user preferred tab display size
+
+# The secondary intent of this config is to have a clean commit history.
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+# Use fixed space indentation when indentation is meaningful
+[*.{md,mdx,yaml,yml}]
+indent_style = space
+indent_size = 2
