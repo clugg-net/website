@@ -18,9 +18,9 @@ build astro:
 
 deploy cloudflare-pages:
   stage: deploy
-  image: oven/bun:1.1-alpine
+  image: node:current-alpine
   script:
-    - bunx wrangler pages deploy "dist" --project-name "$CLOUDFLARE_PROJECT_NAME" --branch "$CI_COMMIT_BRANCH" --commit-hash "$CI_COMMIT_SHA" --commit-message "$CI_COMMIT_MESSAGE"
+    - npx wrangler pages deploy "dist" --project-name "$CLOUDFLARE_PROJECT_NAME" --branch "$CI_COMMIT_BRANCH" --commit-hash "$CI_COMMIT_SHA" --commit-message "$CI_COMMIT_MESSAGE"
   dependencies:
     - build astro
   environment:
@@ -52,8 +52,8 @@ pages:
     url: "https://${CI_PAGES_DOMAIN}/${PAGES_PREFIX}"
   publish: dist
   rules:
-    - if: $CLOUDFLARE_ACCOUNT_ID && $CLOUDFLARE_API_TOKEN && $CLOUDFLARE_PROJECT_NAME
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
       when: never
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    - if: $CI_PAGES_DOMAIN && $CI_PAGES_URL
       when: on_success
     - when: never
