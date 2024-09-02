@@ -5,10 +5,7 @@ import { get_site_settings, type SettingsEntry } from "./settings";
 import type { BaseEntry } from ".";
 
 const url_pattern = "^(https?://[^/]+)?/([.a-zA-Z0-9-]/?)*$";
-
-export function pathFromUrl(url: string): string {
-	return url.includes(":") ? new URL(url).pathname : url;
-}
+const SITE_URL = process.env.SITE_URL;
 
 export const cms_menu: CmsCollection = {
 	name: "menu",
@@ -119,7 +116,7 @@ export async function get_menu_for_url(
 	const entry = all_menu_items.find((entry) => entry.data.url == url);
 	if (typeof entry !== "undefined") return entry;
 	// fallback to matching against the pathname
-	const path = pathFromUrl(url);
+	const path = new URL(url, SITE_URL).pathname;
 	return all_menu_items.find((entry) => entry.data.url == path);
 }
 
@@ -137,9 +134,9 @@ export function synthesize_menu_entry(
 		.split("/");
 	const slug_parts = parent
 		? parent.slug
-				.replace(/\/index$/, "")
-				.split("/")
-				.filter((part) => part.length > 0)
+			.replace(/\/index$/, "")
+			.split("/")
+			.filter((part) => part.length > 0)
 		: [];
 	slug_parts.push(id_parts[id_parts.length - 1]);
 	return {
@@ -164,7 +161,7 @@ export async function get_breadcrumbs(
 	if (typeof all_menu_items == "undefined") {
 		all_menu_items = await get_all_menu_items();
 	}
-	const url_obj = new URL(url);
+	const url_obj = new URL(url, SITE_URL);
 	let site_crumb: AnyMenuEntry | undefined = undefined;
 	const settings: SettingsEntry | undefined = await get_site_settings();
 	if (typeof settings !== "undefined") {
@@ -174,7 +171,7 @@ export async function get_breadcrumbs(
 			settings.id,
 			settings.data.breadcrumb_text || settings.data.title,
 			settings.data.url
-				? new URL(settings.data.url).pathname
+				? new URL(settings.data.url, SITE_URL).pathname
 				: `${url_obj.protocol}${url_obj.host}/`,
 			settings.data.breadcrumb_description ||
 				settings.body ||
@@ -194,7 +191,7 @@ export async function get_breadcrumbs(
 		all_menu_items,
 	);
 	if (typeof current_menu == "undefined") {
-		let parent_url: string = url.includes(":") ? new URL(url).pathname : url;
+		let parent_url: string = new URL(url, SITE_URL).pathname;
 		let parent: AnyMenuEntry | undefined = undefined;
 		while (typeof parent == "undefined" && parent_url.length > 0) {
 			parent_url = parent_url.replace(/\/[^\/]*$/, "");

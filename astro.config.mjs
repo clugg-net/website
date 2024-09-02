@@ -1,4 +1,4 @@
-import { defineConfig, envField } from "astro/config";
+import { defineConfig, envField, sharpImageService } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 
@@ -10,6 +10,7 @@ const today = new Date();
 
 // https://astro.build/config
 export default defineConfig({
+	// site config
 	experimental: {
 		env: {
 			schema: {
@@ -61,10 +62,16 @@ export default defineConfig({
 		},
 		contentLayer: true,
 	},
-	site: process.env.SITE || "http://localhost/",
+	site: process.env.SITE_URL || undefined,
 	base: process.env.BASE || undefined,
 	trailingSlash: process.env.TRAILING_SLASH || "ignore",
-	integrations: [mdx(), sitemap()],
+	integrations: [
+		mdx(),  // process `foo.mdx` into `foo.html`
+		sitemap(),  // build `sitemap-index.xml`, `sitemap-0.xml`, ...
+	],
+	image: {
+		service: sharpImageService(),  // scale images to optimum sizes
+	},
 	output: "static",
 	compressHTML: process.env.COMPRESS_HTML == true,
 	// https://vitejs.dev/config/build-options
