@@ -1,17 +1,43 @@
-# The Docker image that will be used to build your app
-image: oven/bun:1.1-alpine
-# Functions that should be executed before the build script is run
-before_script:
-  - bun install --production --frozen-lockfile
-pages:
+stages:
+  - build
+  - deploy
+
+build astro:
+  stage: build
+  image: oven/bun:1.1-alpine
+  variables:
+    GIT_SUBMODULE_STRATEGY: "recursive"
+    GIT_SUBMODULE_FORCE_HTTPS: "true"
+  before_script:
+    - bun install --production --frozen-lockfile
   script:
     - bun run build
   artifacts:
     paths:
-      # The folder that contains the files to be exposed at the Page URL
       - dist
+  
+deploy cloudflare-pages:
+  stage: deploy
+  image: oven/bun:1.1-alpine
+  script:
+    - bunx wrangler pages deploy "dist" --project-name "$CLOUDFLARE_PROJECT_NAME" --branch "$CI_COMMIT_BRANCH" --commit-hash "$CI_COMMIT_SHA" --commit-message "$CI_COMMIT_MESSAGE"
+  dependencies:
+    - build astro
+  rules:
+    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+      when: manual
+    - if: $CLOUDFLARE_ACCOUNT_ID && $CLOUDFLARE_API_TOKEN && CLOUDFLARE_PROJECT_NAME
+      when: on_success
+    - when: never
+
+pages:
+  stage: deploy
+  dependencies:
+    - build astro
   publish: dist
   rules:
-    # This ensures that only pushes to the default branch will trigger
-    # a pages deploy
+    - if: $CLOUDFLARE_ACCOUNT_ID && $CLOUDFLARE_API_TOKEN && CLOUDFLARE_PROJECT_NAME
+      when: never
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: on_success
+    - when: never
