@@ -63,7 +63,7 @@ export default defineConfig({
 	},
 	site: process.env.SITE || "http://localhost/",
 	base: process.env.BASE || undefined,
-	trailingSlash: process.env.TRAILING_SLASH || "never",
+	trailingSlash: process.env.TRAILING_SLASH || "ignore",
 	integrations: [mdx(), sitemap()],
 	output: "static",
 	compressHTML: process.env.COMPRESS_HTML == true,

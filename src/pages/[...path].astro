@@ -9,7 +9,7 @@ export async function getStaticPaths() {
 	const posts = (await getCollection("page")) as PageEntry[];
 	return posts.map((post) => {
 		const path =
-			post.slug.replace(/(^|\/)index$/, "").replace(/^\/$/, "") || undefined;
+			post.slug.replace(/(^|\/)index$/, "/") || undefined;
 		return {
 			params: { path },
 			props: post,
