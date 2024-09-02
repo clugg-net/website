@@ -26,14 +26,18 @@ deploy cloudflare-pages:
   environment:
     name: "Cloudflare pages ${CLOUDFLARE_PROJECT_NAME}"
     url: "https://${CLOUDFLARE_PROJECT_NAME}.pages.dev/"
+  variables:
+    CLOUDFLARE_ACCOUNT_ID: ""
+    CLOUDFLARE_API_TOKEN: ""
+    CLOUDFLARE_PROJECT_NAME: ""
   rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
+    - if: "$CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH"
       when: manual
-    - if: $CLOUDFLARE_ACCOUNT_ID && $CLOUDFLARE_API_TOKEN && CLOUDFLARE_PROJECT_NAME
+    - if: "$CLOUDFLARE_ACCOUNT_ID && $CLOUDFLARE_API_TOKEN && $CLOUDFLARE_PROJECT_NAME"
       when: on_success
     - when: never
 
-deploy gitlab-pages:
+pages:
   stage: deploy
   script:
     - echo "Pages accessible through ${CI_PAGES_URL}/${PAGES_PREFIX}"
@@ -45,10 +49,10 @@ deploy gitlab-pages:
     path_prefix: "${PAGES_PREFIX}"
   environment:
     name: "Pages ${PAGES_PREFIX}"
-    url: "${CI_PAGES_URL}/${PAGES_PREFIX}"
+    url: "https://${CI_PAGES_DOMAIN}/${PAGES_PREFIX}"
   publish: dist
   rules:
-    - if: $CLOUDFLARE_ACCOUNT_ID && $CLOUDFLARE_API_TOKEN && CLOUDFLARE_PROJECT_NAME
+    - if: $CLOUDFLARE_ACCOUNT_ID && $CLOUDFLARE_API_TOKEN && $CLOUDFLARE_PROJECT_NAME
       when: never
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: on_success
