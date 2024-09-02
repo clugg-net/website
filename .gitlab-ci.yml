@@ -15,7 +15,7 @@ build astro:
   artifacts:
     paths:
       - dist
-  
+
 deploy cloudflare-pages:
   stage: deploy
   image: oven/bun:1.1-alpine
@@ -23,6 +23,9 @@ deploy cloudflare-pages:
     - bunx wrangler pages deploy "dist" --project-name "$CLOUDFLARE_PROJECT_NAME" --branch "$CI_COMMIT_BRANCH" --commit-hash "$CI_COMMIT_SHA" --commit-message "$CI_COMMIT_MESSAGE"
   dependencies:
     - build astro
+  environment:
+    name: "Cloudflare pages ${CLOUDFLARE_PROJECT_NAME}"
+    url: "https://${CLOUDFLARE_PROJECT_NAME}.pages.dev/"
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
       when: manual
@@ -30,10 +33,19 @@ deploy cloudflare-pages:
       when: on_success
     - when: never
 
-pages:
+deploy gitlab-pages:
   stage: deploy
+  script:
+    - echo "Pages accessible through ${CI_PAGES_URL}/${PAGES_PREFIX}"
   dependencies:
     - build astro
+  variables:
+    PAGES_PREFIX: ""
+  pages:
+    path_prefix: "${PAGES_PREFIX}"
+  environment:
+    name: "Pages ${PAGES_PREFIX}"
+    url: "${CI_PAGES_URL}/${PAGES_PREFIX}"
   publish: dist
   rules:
     - if: $CLOUDFLARE_ACCOUNT_ID && $CLOUDFLARE_API_TOKEN && CLOUDFLARE_PROJECT_NAME
