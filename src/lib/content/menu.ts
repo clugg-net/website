@@ -119,7 +119,6 @@ export async function get_menu_for_url(
 }
 
 export function synthesize_menu_entry({
-	parent,
 	id,
 	title,
 	url,
@@ -127,7 +126,6 @@ export function synthesize_menu_entry({
 	body,
 	priority = 0,
 }: {
-	parent?: AnyMenuEntry;
 	id: string;
 	title: string;
 	url: string | URL;
@@ -136,10 +134,6 @@ export function synthesize_menu_entry({
 	priority?: number;
 }): SynthesizedMenuEntry {
 	if (typeof url == "string") url = new URL(url, SITE_URL);
-	const id_parts = id
-		.replace(/\/$/, "")
-		.replace(/\.\w+$/, "")
-		.split("/");
 	return {
 		id,
 		body,
@@ -226,7 +220,6 @@ export async function get_breadcrumbs({
 		} else {
 			// synthesize the current item under whatever parent we found
 			current_menu = synthesize_menu_entry({
-				parent,
 				id: SITE.urlJoin(parent.slug, ":synthetic:"),
 				title,
 				url,
