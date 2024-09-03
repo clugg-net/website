@@ -3,9 +3,11 @@ import type { CmsCollection } from "decap-cms-core";
 import { getCollection } from "astro:content";
 import { get_site_settings, type SettingsEntry } from "./settings";
 import type { BaseEntry } from ".";
+import { URLContext } from "../path";
 
 const url_pattern = "^(https?://[^/]+)?/([.a-zA-Z0-9-]/?)*$";
 const SITE_URL = process.env.SITE_URL;
+const SITE = new URLContext(process.env.SITE_URL || "http://127.0.0.1/");
 
 export const cms_menu: CmsCollection = {
 	name: "menu",
@@ -96,8 +98,7 @@ export async function get_root_menu(
 		all_menu_items = await get_all_menu_items();
 	}
 	for (const entry of all_menu_items) {
-		const parts = entry.slug.split("/");
-		if (parts.length == 1) {
+		if (SITE.parentUrl(entry.slug).pathname == "/") {
 			entries.push(entry);
 		}
 	}
@@ -106,124 +107,145 @@ export async function get_root_menu(
 }
 
 export async function get_menu_for_url(
-	url: string,
+	url: string | URL,
 	all_menu_items?: AnyMenuEntry[],
 ): Promise<AnyMenuEntry | undefined> {
 	if (typeof all_menu_items == "undefined") {
 		all_menu_items = await get_all_menu_items();
 	}
-	// try for an exact match against the full URL (allows for external linked menu items)
-	const entry = all_menu_items.find((entry) => entry.data.url == url);
-	if (typeof entry !== "undefined") return entry;
-	// fallback to matching against the pathname
-	const path = new URL(url, SITE_URL).pathname;
-	return all_menu_items.find((entry) => entry.data.url == path);
+	return all_menu_items.find((entry) => {
+		return SITE.urlEqual(entry.data.url, url);
+	});
 }
 
-export function synthesize_menu_entry(
-	parent: AnyMenuEntry | undefined,
-	id: string,
-	title: string,
-	url: string,
-	body: string,
-	priority: number = 0,
-): SynthesizedMenuEntry {
+export function synthesize_menu_entry({
+	parent,
+	id,
+	title,
+	url,
+	slug,
+	body,
+	priority = 0,
+}: {
+	parent?: AnyMenuEntry;
+	id: string;
+	title: string;
+	url: string | URL;
+	slug: string | URL;
+	body: string;
+	priority?: number;
+}): SynthesizedMenuEntry {
+	if (typeof url == "string") url = new URL(url, SITE_URL);
 	const id_parts = id
 		.replace(/\/$/, "")
 		.replace(/\.\w+$/, "")
 		.split("/");
-	const slug_parts = parent
-		? parent.slug
-			.replace(/\/index$/, "")
-			.split("/")
-			.filter((part) => part.length > 0)
-		: [];
-	slug_parts.push(id_parts[id_parts.length - 1]);
 	return {
 		id,
 		body,
-		slug: slug_parts.join("/"),
+		slug: SITE.normalizedPath(slug).slice(1),
 		collection: "synthesized[menu]",
 		data: {
 			priority,
 			title,
-			url,
+			url: url.href,
 		},
 	};
 }
 
-export async function get_breadcrumbs(
-	url: string,
-	title: string,
-	body: string,
-	all_menu_items?: AnyMenuEntry[],
-): Promise<AnyMenuEntry[]> {
+export async function get_breadcrumbs({
+	url,
+	title,
+	body,
+	all_menu_items = undefined,
+}: {
+	url: string | URL;
+	title: string;
+	body: string;
+	all_menu_items?: AnyMenuEntry[];
+}): Promise<AnyMenuEntry[]> {
+	if (typeof url == "string") url = new URL(SITE.normalizedUrl(url));
 	if (typeof all_menu_items == "undefined") {
 		all_menu_items = await get_all_menu_items();
 	}
-	const url_obj = new URL(url, SITE_URL);
-	let site_crumb: AnyMenuEntry | undefined = undefined;
+	// infer site crumb from first menu item
+	const root_items = await get_root_menu(all_menu_items);
+	var site_crumb: AnyMenuEntry | undefined = root_items[0];
+
 	const settings: SettingsEntry | undefined = await get_site_settings();
-	if (typeof settings !== "undefined") {
+	if (typeof settings != "undefined") {
 		// build site crumb from site settings
-		site_crumb = synthesize_menu_entry(
-			undefined,
-			settings.id,
-			settings.data.breadcrumb_text || settings.data.title,
-			settings.data.url
-				? new URL(settings.data.url, SITE_URL).pathname
-				: `${url_obj.protocol}${url_obj.host}/`,
-			settings.data.breadcrumb_description ||
+		let synthetic_site_crumb = synthesize_menu_entry({
+			id: site_crumb?.id || "",
+			title:
+				settings.data.breadcrumb_text ||
+				settings.data.title ||
+				site_crumb?.data?.title,
+			url: SITE.normalizedPath(
+				settings.data.url || site_crumb?.data?.url || "",
+			),
+			slug: "",
+			body: (
+				settings.data.breadcrumb_description ||
 				settings.body ||
-				settings.data.breadcrumb_text
-				? settings.data.title
-				: "",
-			-1,
+				(settings.data.breadcrumb_text ? settings.data.title : "") ||
+				site_crumb?.body ||
+				""
+			).trim(),
+			priority: -1,
+		});
+		// swap out the old site_crumb for the new
+		all_menu_items = all_menu_items.map((entry) =>
+			entry.id == synthetic_site_crumb.id ? synthetic_site_crumb : entry,
 		);
+		// promote the new site_crumb to top slot
+		if (!site_crumb) all_menu_items.unshift(synthetic_site_crumb);
+		site_crumb = synthetic_site_crumb;
 	} else {
-		// infer site crumb from first menu item
-		const root_items = await get_root_menu(all_menu_items);
-		site_crumb = root_items[0];
 	}
 
-	let current_menu: AnyMenuEntry | undefined = await get_menu_for_url(
+	var current_menu: AnyMenuEntry | undefined = await get_menu_for_url(
 		url,
 		all_menu_items,
 	);
 	if (typeof current_menu == "undefined") {
-		let parent_url: string = new URL(url, SITE_URL).pathname;
+		// no menu entry for the current URL
 		let parent: AnyMenuEntry | undefined = undefined;
-		while (typeof parent == "undefined" && parent_url.length > 0) {
-			parent_url = parent_url.replace(/\/[^\/]*$/, "");
-			parent = await get_menu_for_url(parent_url);
+		// walk up the tree looking for our parent
+		for (const parent_url of SITE.parentUrls(url)) {
+			parent = await get_menu_for_url(parent_url, all_menu_items);
+			if (typeof parent != "undefined") break;
 		}
+		// assume a parent if we didn't find one walking up the tree
 		if (typeof parent == "undefined") {
 			parent = site_crumb;
 		}
-		current_menu = synthesize_menu_entry(
-			parent,
-			url_obj.pathname,
-			title,
-			url,
-			body,
-		);
-		all_menu_items.push(current_menu);
-	}
-	const crumbs = [current_menu];
-	const slug_parts = current_menu.slug.split("/");
-	while (slug_parts.length > 0) {
-		slug_parts.pop();
-		const parent_slug = slug_parts.join("/");
-		for (const entry of all_menu_items) {
-			if (entry.slug == parent_slug) {
-				crumbs.unshift(entry);
-				break;
-			}
+		if (SITE.urlEqual(site_crumb.data.url, url)) {
+			// we're at the top
+			current_menu = site_crumb;
+		} else {
+			// synthesize the current item under whatever parent we found
+			current_menu = synthesize_menu_entry({
+				parent,
+				id: SITE.urlJoin(parent.slug, ":synthetic:"),
+				title,
+				url,
+				slug: `${SITE.normalizedPath(parent.slug).slice(1)}/sythesized`,
+				body,
+			});
+			// add the synthetic entry to the end of the line
+			all_menu_items.push(current_menu);
 		}
 	}
-	if (typeof site_crumb !== "undefined") {
-		if (site_crumb.data.url !== crumbs[0].data.url) {
-			crumbs.unshift(site_crumb);
+
+	// build the crumbs from the current_menu
+	const crumbs = [current_menu];
+	// insert all parent crumbs
+	for (const parent_slug of SITE.parentUrls(current_menu.slug)) {
+		for (const entry of all_menu_items) {
+			if (SITE.urlEqual(entry.slug, parent_slug)) {
+				crumbs.unshift(entry);
+			}
 		}
 	}
 

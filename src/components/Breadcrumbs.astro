@@ -13,7 +13,7 @@ const {
 	body = "",
 } = Astro.props;
 
-const breadcrumbs = await get_breadcrumbs(url, title, body);
+const breadcrumbs = await get_breadcrumbs({url, title, body});
 const current_menu = breadcrumbs[breadcrumbs.length - 1];
 const schema = JSON.stringify({
 	"@context": "http://schema.org",
