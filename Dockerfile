@@ -35,8 +35,8 @@ USER root
 RUN chsh --shell /bin/bash ${USER}
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
-        git openssh-client procps zsh bash bash-completion \
-    && apt-get -y clean
+        git openssh-client procps zsh bash bash-completion make sudo \
+    && apt-get -y clean && adduser ${USER} sudo && passwd --delete bun
 USER ${USER}
 
 FROM bun-alpine AS devcontainer-alpine
