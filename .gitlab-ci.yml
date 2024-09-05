@@ -43,13 +43,16 @@ pages:
     - echo "Pages accessible through ${CI_PAGES_URL}/${PAGES_PREFIX}"
   dependencies:
     - build astro
+  artifacts:
+    paths:
+      - dist
   variables:
     PAGES_PREFIX: ""
   pages:
     path_prefix: "${PAGES_PREFIX}"
   environment:
-    name: "Pages ${PAGES_PREFIX}"
-    url: "https://${CI_PAGES_DOMAIN}/${PAGES_PREFIX}"
+    name: "GitLab Pages"
+    url: $CI_PAGES_URL
   publish: dist
   rules:
     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
